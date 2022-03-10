@@ -2,6 +2,8 @@ package com.ramiro.apifullstack.ApiUsuarios.services;
 
 import com.ramiro.apifullstack.ApiUsuarios.entities.Usuario;
 import com.ramiro.apifullstack.ApiUsuarios.repositories.UsuarioRepository;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,15 +53,20 @@ public class UsuarioDAOImpl implements UsuarioDAO{
 
     @Override
     public boolean verificarEmailPassword(Usuario usuario) {
-        String query = "FROM Usuario WHERE correo = :correo and password =:password";
+        String query = "FROM Usuario WHERE correo = :correo";
 
 
         List<Usuario> listaResultante= entityManager.createQuery(query)
                 .setParameter("correo", usuario.getCorreo())
-                .setParameter("password", usuario.getPassword())
                 .getResultList();
+            if (listaResultante.isEmpty()){
+                    return false;
+                        }
+        String passwordHashed = listaResultante.get(0).getPassword();
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        return argon2.verify(passwordHashed, usuario.getPassword());
 
-        return !listaResultante.isEmpty();
+
     }
 
    /** @Override

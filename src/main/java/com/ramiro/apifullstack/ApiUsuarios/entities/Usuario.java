@@ -24,7 +24,7 @@ public class Usuario implements Serializable, Comparable<Usuario>{
     private String correo;
     @Column(name = "celular")
     private String celular;
-    @Column(name = "password")
+    @Column(name = "password",length = 255)
     private String password;
 
 
