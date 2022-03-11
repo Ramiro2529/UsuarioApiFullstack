@@ -11,6 +11,8 @@ public interface UsuarioDAO {
     void guardar(Usuario usuario);
     void eliminarId(Long id);
     Iterable<Usuario> guardarTodos(Iterable<Usuario> usuarios);
-    boolean verificarEmailPassword(Usuario usuario);
-   // Optional<Usuario> buscarPorCorreoYContra(String correo, String password);
+    Usuario obtenerUsuarioPorCredenciales(Usuario usuario);
+
+
+    // Optional<Usuario> buscarPorCorreoYContra(String correo, String password);
 }

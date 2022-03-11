@@ -52,7 +52,7 @@ public class UsuarioDAOImpl implements UsuarioDAO{
     }
 
     @Override
-    public boolean verificarEmailPassword(Usuario usuario) {
+    public Usuario obtenerUsuarioPorCredenciales(Usuario usuario) {
         String query = "FROM Usuario WHERE correo = :correo";
 
 
@@ -60,11 +60,15 @@ public class UsuarioDAOImpl implements UsuarioDAO{
                 .setParameter("correo", usuario.getCorreo())
                 .getResultList();
             if (listaResultante.isEmpty()){
-                    return false;
+                    return null;
                         }
         String passwordHashed = listaResultante.get(0).getPassword();
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        return argon2.verify(passwordHashed, usuario.getPassword());
+        if(argon2.verify(passwordHashed, usuario.getPassword())) {
+            return listaResultante.get(0);
+        }else {
+            return null;
+        }
 
 
     }

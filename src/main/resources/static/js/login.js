@@ -23,7 +23,9 @@ $(document).ready(function() {
 
   const response = await request.text();
 
-  if(response=='Ok'){
+  if(response!='Fail'){
+  localStorage.token=response;
+  localStorage.email=datos.correo;
   window.location.href='usuarios.html';
   }else{
 

@@ -2,21 +2,21 @@ package com.ramiro.apifullstack.ApiUsuarios.controllers;
 
 import com.ramiro.apifullstack.ApiUsuarios.entities.Usuario;
 import com.ramiro.apifullstack.ApiUsuarios.services.UsuarioDAO;
+import com.ramiro.apifullstack.ApiUsuarios.utils.JWTUtil;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @RestController
 public class UsuarioController {
 
     @Autowired
     private UsuarioDAO usuarioDAO;
+    @Autowired
+    private JWTUtil jwtUtil;
 
     /**
      * Método que nos regresa un usuario buscado por id.
@@ -25,19 +25,38 @@ public class UsuarioController {
      */
 
     @GetMapping("usuario/{id}")
-    public Optional<Usuario> prueba (@PathVariable Long id){
+    public Optional<Usuario> obtenerUsuarioId (@PathVariable Long id){
 
         return usuarioDAO.obtenerUsuarioId(id);
     }
+
+
+
 
     /**
      * Método que nos regresa una Lista de tipo Usuario
      * @return Iterable de tipo Usuario
      */
     @GetMapping("/listaUsuarios")
-    public Iterable<Usuario> usuarios (){
+    public Iterable<Usuario> usuarios (@RequestHeader (value = "Authorization")String token){
+
+        if (!validarToken(token)){
+            return null;
+        }
 
         return usuarioDAO.listaUsuarios();
+
+    }
+
+    /**
+     * Método para validar un token
+     * @param token
+     * @return true o false
+     */
+    private boolean validarToken(String token){
+        String usuarioId= jwtUtil.getKey(token);
+        return usuarioId != null;
+
 
     }
 
@@ -46,7 +65,11 @@ public class UsuarioController {
      * @param id
      */
     @DeleteMapping("/borrarPorId/{id}")
-    public void eliminarId(@PathVariable Long id){
+    public void eliminarId(@PathVariable Long id,@RequestHeader (value = "Authorization")String token){
+
+        if (!validarToken(token)){
+            return;
+        }
         usuarioDAO.eliminarId(id);
     }
 
